@@ -20,7 +20,7 @@ export default function VideoScreen() {
   const router = useRouter();
   const { video, loading, error } = useVideo(id || null);
   const progress = useVideoStore((s) => s.progress);
-  const { items: danmakuItems, sendDanmaku } = useDanmaku(id || null, progress);
+  const { items: danmakuItems, viewCount, useWebSocket: wsActive, sendDanmaku } = useDanmaku(id || null, progress);
   const [liked, setLiked] = useState(false);
   const [favorited, setFavorited] = useState(false);
   const isAuth = useAuthStore((s) => s.isAuthenticated);
@@ -89,7 +89,7 @@ export default function VideoScreen() {
         <View style={styles.info}>
           <Text style={styles.title}>{video.title}</Text>
           <View style={styles.stats}>
-            <Text style={styles.statText}>{formatCount(video.view_count)} views</Text>
+            <Text style={styles.statText}>{formatCount(viewCount || video.view_count)} views{wsActive ? " · 🟢 Live" : ""}</Text>
             <Text style={styles.statText}> · {formatCount(video.like_count)} likes</Text>
             <Text style={styles.statText}> · {formatCount(video.comment_count)} comments</Text>
           </View>

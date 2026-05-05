@@ -21,6 +21,7 @@ type Message struct {
 	Mode      string `json:"mode,omitempty"`
 	CreatedAt string `json:"created_at,omitempty"`
 	Error     string `json:"error,omitempty"`
+	Count     int64  `json:"count,omitempty"`
 }
 
 // A Room manages all clients watching the same video.
@@ -137,6 +138,27 @@ func (h *Hub) PublishDanmaku(msg Message) {
 	if h.pubsub != nil {
 		h.pubsub.Publish(context.Background(), msg.VideoID, msg)
 	}
+}
+
+// ActiveRooms returns all video IDs with connected clients.
+func (h *Hub) ActiveRooms() []string {
+	h.mu.RLock()
+	defer h.mu.RUnlock()
+	ids := make([]string, 0, len(h.rooms))
+	for id := range h.rooms {
+		ids = append(ids, id)
+	}
+	return ids
+}
+
+// BroadcastViewCount sends a view count update to all clients in a room.
+func (h *Hub) BroadcastViewCount(videoID string, count int64) {
+	msg := Message{
+		Type:    "view_count",
+		VideoID: videoID,
+		Count:   count,
+	}
+	h.BroadcastToAll(videoID, msg)
 }
 
 // RoomCount returns the number of clients in a video room.

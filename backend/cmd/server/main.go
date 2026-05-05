@@ -89,6 +89,22 @@ func main() {
 		deps.Redis = redisClient.RDB()
 	}
 
+	// Periodically broadcast view counts to WebSocket clients
+	go func() {
+		ticker := time.NewTicker(30 * time.Second)
+		defer ticker.Stop()
+		for range ticker.C {
+			for _, videoID := range hub.ActiveRooms() {
+				var count int64
+				if err := sqlDB.QueryRowContext(ctx,
+					`SELECT view_count FROM videos WHERE id = $1`, videoID,
+				).Scan(&count); err == nil {
+					hub.BroadcastViewCount(videoID, count)
+				}
+			}
+		}
+	}()
+
 	srv := &http.Server{
 		Addr:              cfg.Addr(),
 		Handler:           httpapi.New(deps),

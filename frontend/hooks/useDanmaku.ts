@@ -15,6 +15,7 @@ interface DanmakuItem {
 
 export function useDanmaku(videoId: string | null, currentTime: number) {
   const [items, setItems] = useState<DanmakuItem[]>([]);
+  const [viewCount, setViewCount] = useState(0);
   const [useWebSocket, setUseWebSocket] = useState(false);
   const wsRef = useRef<WebSocket | null>(null);
   const token = useAuthStore((s) => s.token);
@@ -32,6 +33,8 @@ export function useDanmaku(videoId: string | null, currentTime: number) {
         const msg = JSON.parse(event.data);
         if (msg.type === "danmaku") {
           setItems((prev) => [...prev.slice(-200), msg as DanmakuItem]);
+        } else if (msg.type === "view_count") {
+          setViewCount(msg.count || 0);
         }
       } catch {}
     };
@@ -85,5 +88,5 @@ export function useDanmaku(videoId: string | null, currentTime: number) {
     [videoId]
   );
 
-  return { items, sendDanmaku, useWebSocket, setUseWebSocket };
+  return { items, viewCount, sendDanmaku, useWebSocket, setUseWebSocket };
 }
