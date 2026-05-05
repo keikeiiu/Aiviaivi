@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"strings"
 
+	"ailivili/internal/metrics"
 	"ailivili/internal/middleware"
 	"ailivili/internal/model"
 	"ailivili/internal/response"
@@ -82,5 +83,6 @@ func (h *Handler) DanmakuSend(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	metrics.IncDanmaku()
 	response.OK(w, d)
 }
