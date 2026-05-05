@@ -40,7 +40,7 @@
 | Frontend: Favorite button | ✅ |
 | Redis container | ✅ |
 
-### P2 Real-time — 11/12 ✅ (1 deferred)
+### P2 Real-time — 12/12 ✅
 | Item | Status |
 |------|--------|
 | WebSocket danmaku server | ✅ |
@@ -49,7 +49,7 @@
 | Watch history tracking | ✅ |
 | Frontend: WS danmaku (with REST fallback) | ✅ |
 | Frontend: Live view counter | ✅ |
-| Frontend: In-feed video auto-preview | ⏭ Deferred |
+| Frontend: In-feed video auto-preview | ✅ |
 | Frontend: Mini-player overlay | ✅ |
 | Rate limiting via Redis | ✅ |
 
@@ -69,7 +69,7 @@
 | Video download support | ⏭ Deferred |
 | App store config | ⏭ Deferred |
 
-**50/52 plan items delivered. 2 deferred (in-feed preview + video download, both need native device APIs).**
+**51/52 plan items delivered. 1 deferred (video download needs native file system API).**
 
 ---
 
