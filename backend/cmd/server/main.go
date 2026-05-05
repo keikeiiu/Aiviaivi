@@ -60,11 +60,19 @@ func main() {
 	var store storage.FileStore
 	switch cfg.Storage {
 	case "minio":
-		store = storage.NewMinioStore(
+		useSSL := os.Getenv("MINIO_USE_SSL") == "true"
+		s, err := storage.NewMinioStore(
 			os.Getenv("MINIO_ENDPOINT"),
+			os.Getenv("MINIO_ACCESS_KEY"),
+			os.Getenv("MINIO_SECRET_KEY"),
 			os.Getenv("MINIO_BUCKET"),
 			cfg.StorageBaseURL,
+			useSSL,
 		)
+		if err != nil {
+			log.Fatalf("minio: %v", err)
+		}
+		store = s
 	default:
 		store = storage.NewLocalStore("uploads", cfg.StorageBaseURL)
 	}
