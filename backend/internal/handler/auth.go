@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"strings"
+	"time"
 
 	"ailivili/internal/auth"
 	"ailivili/internal/model"
@@ -69,6 +70,13 @@ func (h *Handler) AuthRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Store refresh token hash in DB for revocation support
+	refreshExpires := time.Now().Add(h.jwtExpires * 24 * 7)
+	if err := model.StoreRefreshToken(r.Context(), h.db, u.ID, refreshToken, refreshExpires); err != nil {
+		response.Error(w, http.StatusInternalServerError, 50003, "store refresh token failed")
+		return
+	}
+
 	response.OK(w, map[string]any{
 		"user": map[string]any{
 			"id":       u.ID,
@@ -122,6 +130,13 @@ func (h *Handler) AuthLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Store refresh token hash in DB for revocation support
+	refreshExpires := time.Now().Add(h.jwtExpires * 24 * 7)
+	if err := model.StoreRefreshToken(r.Context(), h.db, u.ID, refreshToken, refreshExpires); err != nil {
+		response.Error(w, http.StatusInternalServerError, 50003, "store refresh token failed")
+		return
+	}
+
 	response.OK(w, map[string]any{
 		"user": map[string]any{
 			"id":       u.ID,
@@ -151,6 +166,7 @@ func (h *Handler) AuthRefresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// Verify JWT signature first
 	tok, claims, err := auth.ParseToken(req.RefreshToken, h.jwtSecret)
 	if err != nil || tok == nil || !tok.Valid {
 		response.Error(w, http.StatusUnauthorized, 40104, "invalid refresh token")
@@ -163,28 +179,47 @@ func (h *Handler) AuthRefresh(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	sub, ok := claims["sub"].(string)
-	if !ok || strings.TrimSpace(sub) == "" {
-		response.Error(w, http.StatusUnauthorized, 40104, "invalid refresh token")
-		return
-	}
-
-	u, err := model.GetUserByID(r.Context(), h.db, sub)
+	// Validate against DB: checks hash exists, not expired, not revoked.
+	// ConsumeRefreshToken also deletes the old token (rotation).
+	userID, err := model.ConsumeRefreshToken(r.Context(), h.db, req.RefreshToken)
 	if err != nil {
-		if err == model.ErrUserNotFound {
-			response.Error(w, http.StatusUnauthorized, 40104, "user not found")
+		if err == model.ErrRefreshTokenNotFound || err == model.ErrRefreshTokenExpired || err == model.ErrRefreshTokenRevoked {
+			response.Error(w, http.StatusUnauthorized, 40104, "invalid refresh token")
 		} else {
-			response.Error(w, http.StatusInternalServerError, 50005, "get user failed")
+			response.Error(w, http.StatusInternalServerError, 50005, "refresh failed")
 		}
 		return
 	}
-	_ = u
 
-	newToken, err := auth.NewToken(sub, h.jwtSecret, h.jwtExpires)
+	// Verify user still exists
+	if _, err := model.GetUserByID(r.Context(), h.db, userID); err != nil {
+		response.Error(w, http.StatusUnauthorized, 40104, "user not found")
+		return
+	}
+
+	// Issue new access token
+	newToken, err := auth.NewToken(userID, h.jwtSecret, h.jwtExpires)
 	if err != nil {
 		response.Error(w, http.StatusInternalServerError, 50003, "create token failed")
 		return
 	}
 
-	response.OK(w, map[string]any{"token": newToken})
+	// Issue new refresh token (rotation)
+	newRefreshToken, err := auth.NewRefreshToken(userID, h.jwtSecret, h.jwtExpires*24*7)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, 50003, "create token failed")
+		return
+	}
+
+	// Store new refresh token hash
+	refreshExpires := time.Now().Add(h.jwtExpires * 24 * 7)
+	if err := model.StoreRefreshToken(r.Context(), h.db, userID, newRefreshToken, refreshExpires); err != nil {
+		response.Error(w, http.StatusInternalServerError, 50003, "store refresh token failed")
+		return
+	}
+
+	response.OK(w, map[string]any{
+		"token":         newToken,
+		"refresh_token": newRefreshToken,
+	})
 }

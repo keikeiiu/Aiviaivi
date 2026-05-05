@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"errors"
 	"time"
 
@@ -13,6 +15,7 @@ func NewToken(userID string, secret string, expires time.Duration) (string, erro
 		"sub": userID,
 		"iat": now.Unix(),
 		"exp": now.Add(expires).Unix(),
+		"jti": randomID(),
 	}
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return t.SignedString([]byte(secret))
@@ -24,10 +27,17 @@ func NewRefreshToken(userID string, secret string, expires time.Duration) (strin
 		"sub":  userID,
 		"iat":  now.Unix(),
 		"exp":  now.Add(expires).Unix(),
+		"jti":  randomID(),
 		"type": "refresh",
 	}
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
 	return t.SignedString([]byte(secret))
+}
+
+func randomID() string {
+	b := make([]byte, 8)
+	rand.Read(b)
+	return hex.EncodeToString(b)
 }
 
 func ParseToken(tokenStr string, secret string) (*jwt.Token, jwt.MapClaims, error) {
