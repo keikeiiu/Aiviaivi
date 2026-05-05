@@ -1,9 +1,9 @@
 # Undecided / Needs Decision
 
-> Only 3 architectural decisions remain — all are production concerns, not blockers for the prototype.
+> 2 decisions remain. #1 was resolved and implemented (DB-backed refresh tokens).
 
 | # | Category | Question | Why it matters |
 |---|----------|----------|----------------|
-| 1 | Refresh Tokens | Stateless JWT (current) vs DB-backed for revocation? | DB-backed lets you force-logout users. Needed before launch. |
-| 2 | MinIO SDK | Add real `minio-go` implementation vs keep local storage? | Local `/uploads/` works fine for dev. MinIO needed at scale. |
-| 3 | Deploy Target | Docker Compose (current) → fly.io, railway, AWS? | `docker compose up` + `npx expo start --web` both verified working. |
+| 1 | ~~Refresh Tokens~~ | ~~Stateless vs DB-backed~~ | **Resolved**: DB-backed implemented with rotation, jti uniqueness, token reuse detection. |
+| 2 | Storage Backend | Keep local storage or implement MinIO SDK? | Local `/uploads/` verified working. MinIO needed at scale. |
+| 3 | Deploy Target | Docker Compose → fly.io, railway, AWS? | `docker compose up` + `npx expo start --web` verified. |

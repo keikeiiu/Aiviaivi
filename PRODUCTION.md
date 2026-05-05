@@ -61,7 +61,7 @@ CREATE INDEX idx_refresh_tokens_hash ON refresh_tokens(token_hash);
 ```
 
 ### Recommendation
-**Switch to DB-backed (Option B) before production.** The security benefits outweigh the minimal performance cost. For a prototype, stateless is fine — but user sessions should be revocable in production. The migration is straightforward and the code change is isolated to the auth package.
+**Implemented — DB-backed refresh tokens deployed (2026-05-06).** Migration 013, model/refresh.go, token rotation with jti uniqueness, token reuse detection, explicit transactions for commit safety.
 
 ---
 
@@ -199,7 +199,7 @@ Cons:
 | **Security** | Change `JWT_SECRET` to a strong random value | P0 |
 | **Security** | Set CORS `Allow-Origin` to your frontend domain (not `*`) | P0 |
 | **Security** | Add rate limiting to auth endpoints (currently global only) | P1 |
-| **Auth** | Implement DB-backed refresh tokens (Decision 1) | P1 |
+| **Auth** | ~~Implement DB-backed refresh tokens (Decision 1)~~ ✅ Done | P1 |
 | **Database** | Set up automated backups (script exists in `scripts/backup.sh`) | P0 |
 | **Database** | Configure `pgbouncer` or connection pooling if >100 concurrent | P2 |
 | **Storage** | Decide on MinIO vs local storage (Decision 2) | P1 |
