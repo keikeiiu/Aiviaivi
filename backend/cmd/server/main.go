@@ -75,6 +75,7 @@ func main() {
 		JWTExpires: cfg.JWTExpires,
 		Hub:        hub,
 		Store:      store,
+		CORSOrigin: cfg.CORSOrigin,
 	}
 	if redisClient != nil {
 		deps.Redis = redisClient.RDB()

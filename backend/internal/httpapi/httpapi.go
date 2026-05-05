@@ -23,12 +23,13 @@ type Deps struct {
 	Redis      *goredis.Client  // optional
 	Hub        *ws.Hub
 	Store      storage.FileStore
+	CORSOrigin string
 }
 
 func New(deps Deps) http.Handler {
 	r := chi.NewRouter()
 	r.Use(middleware.PrometheusMetrics)
-	r.Use(middleware.CORS)
+	r.Use(middleware.CORS(deps.CORSOrigin))
 	r.Use(chimw.RequestID)
 	r.Use(chimw.RealIP)
 	r.Use(chimw.Logger)

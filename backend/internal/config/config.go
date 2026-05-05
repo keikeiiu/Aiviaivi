@@ -16,6 +16,8 @@ type Config struct {
 	RedisURL       string
 	Storage        string // "local" or "minio"
 	StorageBaseURL string
+	CORSOrigin     string
+	HLSBaseURL     string
 }
 
 func Load() (Config, error) {
@@ -33,6 +35,8 @@ func Load() (Config, error) {
 	cfg.RedisURL = os.Getenv("REDIS_URL")
 	cfg.Storage = getenv("STORAGE", "local")
 	cfg.StorageBaseURL = getenv("STORAGE_BASE_URL", "")
+	cfg.CORSOrigin = getenv("CORS_ORIGIN", "*")
+	cfg.HLSBaseURL = getenv("HLS_BASE_URL", "")
 
 	expiresMin, err := strconv.Atoi(getenv("JWT_EXPIRES_MINUTES", "60"))
 	if err != nil {

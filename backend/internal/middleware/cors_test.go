@@ -7,7 +7,7 @@ import (
 )
 
 func TestCORSPreflight(t *testing.T) {
-	handler := CORS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := CORS("*")(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		t.Fatal("handler should not be called for OPTIONS")
 	}))
 
@@ -22,7 +22,7 @@ func TestCORSPreflight(t *testing.T) {
 
 func TestCORSNormalRequest(t *testing.T) {
 	var called bool
-	handler := CORS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+	handler := CORS("*")(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		called = true
 	}))
 
@@ -39,7 +39,7 @@ func TestCORSNormalRequest(t *testing.T) {
 }
 
 func TestCORSHeaders(t *testing.T) {
-	handler := CORS(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
+	handler := CORS("*")(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {}))
 
 	w := httptest.NewRecorder()
 	r := httptest.NewRequest("POST", "/test", nil)

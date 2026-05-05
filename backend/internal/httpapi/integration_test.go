@@ -52,6 +52,7 @@ func newTestRouter(t *testing.T, sqlDB *sql.DB) http.Handler {
 		JWTSecret:  "integration-test-secret",
 		JWTExpires: time.Hour,
 		Hub:        ws.NewHub(),
+		CORSOrigin: "*",
 	})
 }
 
