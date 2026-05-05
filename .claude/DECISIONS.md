@@ -1,8 +1,9 @@
 # Undecided / Needs Decision
 
-| # | Category | Question | Context |
-|---|----------|----------|---------|
-| 1 | Refresh Tokens | Stateless JWT (current) vs DB-backed (revocable per plan)? | Both approaches valid. Stateless is simpler. |
-| 2 | HLS Base URL | manifest_urls are relative paths. Frontend `HLS_BASE_URL` is localhost:8081. Make configurable via env? | Works for dev. Production needs env var. |
-| 3 | MinIO SDK | Storage abstraction exists (interface + local + MinIO stub). Add real `minio-go`? | Local storage verified. MinIO for production. |
-| 4 | App Store Deploy | Full stack verified. Ready for: (a) Docker deploy, (b) iOS/Android build, (c) cloud deploy. | `docker compose up` + `npx expo start --web` both verified. |
+> Only 3 architectural decisions remain — all are production concerns, not blockers for the prototype.
+
+| # | Category | Question | Why it matters |
+|---|----------|----------|----------------|
+| 1 | Refresh Tokens | Stateless JWT (current) vs DB-backed for revocation? | DB-backed lets you force-logout users. Needed before launch. |
+| 2 | MinIO SDK | Add real `minio-go` implementation vs keep local storage? | Local `/uploads/` works fine for dev. MinIO needed at scale. |
+| 3 | Deploy Target | Docker Compose (current) → fly.io, railway, AWS? | `docker compose up` + `npx expo start --web` both verified working. |
