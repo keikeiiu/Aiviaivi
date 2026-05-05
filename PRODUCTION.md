@@ -122,7 +122,7 @@ The `FileStore` interface makes this swap transparent:
 4. Existing video upload handler code doesn't change
 
 ### Recommendation
-**Keep local storage for now, implement MinIO when scaling beyond 1 server.** The abstraction layer is already in place — the switch is a configuration change, not a code rewrite. For a single-server prototype or small deployment (<1,000 concurrent users), local disk with regular backups is sufficient.
+**Implemented — MinIO SDK integrated (2026-05-06).** Full `MinioStore` with auto-bucket creation, SSL support, configurable endpoint/credentials. Set `STORAGE=minio` to switch. Integration test verified against real MinIO server. Local storage remains the default for single-server deployments.
 
 ---
 
@@ -202,7 +202,7 @@ Cons:
 | **Auth** | ~~Implement DB-backed refresh tokens (Decision 1)~~ ✅ Done | P1 |
 | **Database** | Set up automated backups (script exists in `scripts/backup.sh`) | P0 |
 | **Database** | Configure `pgbouncer` or connection pooling if >100 concurrent | P2 |
-| **Storage** | Decide on MinIO vs local storage (Decision 2) | P1 |
+| **Storage** | ~~Decide on MinIO vs local storage (Decision 2)~~ ✅ MinIO implemented | P1 |
 | **Storage** | Set up CDN for HLS segments (CloudFront/Cloudflare) | P2 |
 | **Monitoring** | Deploy Grafana dashboard (JSON in `monitoring/`) | P1 |
 | **Monitoring** | Set up alerts (high error rate, high latency, disk full) | P1 |
