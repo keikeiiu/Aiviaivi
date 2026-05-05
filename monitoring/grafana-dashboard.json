@@ -1,0 +1,93 @@
+{
+  "dashboard": {
+    "title": "AiliVili API",
+    "uid": "ailivili",
+    "timezone": "browser",
+    "refresh": "10s",
+    "panels": [
+      {
+        "title": "HTTP Requests / sec",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 0, "w": 12, "h": 8 },
+        "targets": [{
+          "expr": "rate(http_requests_total[1m])",
+          "legendFormat": "{{method}} {{path}} ({{status}})"
+        }],
+        "yaxes": [{ "format": "rps" }]
+      },
+      {
+        "title": "Request Duration (p95)",
+        "type": "graph",
+        "gridPos": { "x": 12, "y": 0, "w": 12, "h": 8 },
+        "targets": [{
+          "expr": "histogram_quantile(0.95, rate(http_request_duration_seconds_bucket[1m]))",
+          "legendFormat": "{{method}} {{path}}"
+        }],
+        "yaxes": [{ "format": "s" }]
+      },
+      {
+        "title": "Active WebSocket Connections",
+        "type": "stat",
+        "gridPos": { "x": 0, "y": 8, "w": 6, "h": 4 },
+        "targets": [{
+          "expr": "ws_connections_active"
+        }],
+        "thresholds": [{ "value": 0, "color": "green" }, { "value": 50, "color": "orange" }, { "value": 100, "color": "red" }]
+      },
+      {
+        "title": "Danmaku Sent (rate)",
+        "type": "stat",
+        "gridPos": { "x": 6, "y": 8, "w": 6, "h": 4 },
+        "targets": [{
+          "expr": "rate(danmaku_sent_total[5m])"
+        }],
+        "format": "rps"
+      },
+      {
+        "title": "Videos Uploaded",
+        "type": "stat",
+        "gridPos": { "x": 12, "y": 8, "w": 6, "h": 4 },
+        "targets": [{
+          "expr": "videos_uploaded_total"
+        }]
+      },
+      {
+        "title": "Videos Transcoded",
+        "type": "stat",
+        "gridPos": { "x": 18, "y": 8, "w": 6, "h": 4 },
+        "targets": [{
+          "expr": "videos_transcoded_total"
+        }],
+        "thresholds": [{ "value": 1, "color": "red" }]
+      },
+      {
+        "title": "Go Goroutines",
+        "type": "graph",
+        "gridPos": { "x": 0, "y": 12, "w": 8, "h": 6 },
+        "targets": [{
+          "expr": "go_goroutines"
+        }]
+      },
+      {
+        "title": "Go Memory",
+        "type": "graph",
+        "gridPos": { "x": 8, "y": 12, "w": 8, "h": 6 },
+        "targets": [
+          { "expr": "go_memstats_alloc_bytes", "legendFormat": "alloc" },
+          { "expr": "go_memstats_heap_inuse_bytes", "legendFormat": "heap" }
+        ],
+        "yaxes": [{ "format": "bytes" }]
+      },
+      {
+        "title": "HTTP Status Codes",
+        "type": "graph",
+        "gridPos": { "x": 16, "y": 12, "w": 8, "h": 6 },
+        "targets": [{
+          "expr": "sum(rate(http_requests_total[1m])) by (status)",
+          "legendFormat": "HTTP {{status}}"
+        }]
+      }
+    ],
+    "schemaVersion": 16
+  }
+}
