@@ -1,0 +1,35 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(go build *)",
+      "Bash(go vet *)",
+      "Bash(brew --version)",
+      "Bash(brew install *)",
+      "Bash(go version *)",
+      "Bash(go mod *)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git -C /Users/keiiu/Documents/Github/AiliVili add backend/internal/handler/auth.go backend/go.sum backend/go.mod)",
+      "Bash(git -C /Users/keiiu/Documents/Github/AiliVili commit -m ' *)",
+      "Bash(git -C /Users/keiiu/Documents/Github/AiliVili add backend/internal/config/config.go)",
+      "Bash(git -C /Users/keiiu/Documents/Github/AiliVili add backend/internal/handler/auth.go)",
+      "Bash(git -C /Users/keiiu/Documents/Github/AiliVili add backend/Dockerfile)",
+      "Bash(git -C /Users/keiiu/Documents/Github/AiliVili add backend/cmd/server/main.go)",
+      "Bash(git -C /Users/keiiu/Documents/Github/AiliVili status --short)",
+      "Bash(git -C /Users/keiiu/Documents/Github/AiliVili add backend/internal/auth/ backend/internal/db/ backend/internal/handler/handler.go backend/internal/handler/health.go backend/internal/handler/user.go backend/internal/httpapi/ backend/internal/middleware/ backend/internal/model/ backend/internal/response/ backend/migrations/)"
+    ]
+  },
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "CMD=$(python3 -c \"import json,sys; d=json.load(sys.stdin); print(d.get('tool_input',d).get('command',''))\" 2>/dev/null || true); case \"$CMD\" in *grep*|*rg\\ *|*ripgrep*|*find\\ *|*fd\\ *|*ack\\ *|*ag\\ *)   [ -f graphify-out/graph.json ] &&   echo '{\"hookSpecificOutput\":{\"hookEventName\":\"PreToolUse\",\"additionalContext\":\"graphify: Knowledge graph exists. Read graphify-out/GRAPH_REPORT.md for god nodes and community structure before searching raw files.\"}}'   || true ;; esac"
+          }
+        ]
+      }
+    ]
+  }
+}
