@@ -2,9 +2,8 @@
 
 | # | Category | Question | Context |
 |---|----------|----------|---------|
-| 1 | FFmpeg | Not installed locally — transcoding step fails gracefully (video stays "processing"). Install with `brew install ffmpeg` for full transcode testing. | Upload works, file saved. Transcode needs ffmpeg. |
-| 2 | Refresh Tokens | Stateless JWT (simpler, current) vs DB-backed (revocable)? | Stateless 7x expiry works. DB-backed allows individual revocation. |
-| 3 | HLS Base URL | manifest_urls use relative paths. Frontend `HLS_BASE_URL` hardcoded to localhost:8081. Make configurable via env? | Works for dev. Needs config for production. |
-| 4 | MinIO SDK | Storage abstraction exists (interface + local + MinIO stub). Add real `minio-go`? | Local `/uploads/` verified working. MinIO for production. |
-| 5 | Frontend Testing | 31 backend endpoints live-tested. Frontend needs `npx expo start` with Expo Go or simulator. Ready to test? | Frontend compiles (tsc --noEmit passes). Backend live at localhost:8080. |
-| 6 | Production Deploy | Full stack complete + live tested. Ready for: (a) `docker compose up`, (b) cloud deploy, (c) CI/CD pipeline. | All code, tests, and live verification done. |
+| 1 | Expo Bootstrap | Frontend code is complete but can't start due to version mismatch between manually-configured package.json and expo-router. Fix: `cd frontend && npx create-expo-app .` to regenerate proper deps, then re-apply source files. | Frontend code is correct (tsc passes). Package versions need Expo's auto-resolution. |
+| 2 | Refresh Tokens | Stateless JWT (current) vs DB-backed (revocable per plan)? | Both approaches are valid. Current stateless works. |
+| 3 | HLS Base URL | manifest_urls are relative paths. Frontend `HLS_BASE_URL` is localhost:8081. Make configurable? | Works for dev. Needs env var for production. |
+| 4 | MinIO SDK | Storage abstraction exists (interface + local + MinIO stub). Add real `minio-go`? | Local storage verified working. MinIO for production scale. |
+| 5 | Deploy Configs | Docker Compose ready. Add production deploy scripts (fly.io, railway, etc.)? | `docker compose up` works. No cloud deploy configs yet. |
