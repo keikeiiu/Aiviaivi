@@ -85,3 +85,25 @@ docker-compose.yml  postgres + redis + api + nginx
 | REDIS_URL | (optional) | Redis address for cache + rate limiting |
 | STORAGE | local | Storage backend: "local" or "minio" |
 | STORAGE_BASE_URL | (optional) | Public base URL for stored files |
+
+## Deploy (fly.io)
+
+```bash
+# One-time setup
+brew install flyctl        # macOS
+# or: curl -L https://fly.io/install.sh | sh
+
+fly auth signup             # Create account
+fly launch                  # Auto-detects config
+
+# Set secrets
+fly secrets set DATABASE_URL="postgres://..." JWT_SECRET="$(openssl rand -hex 32)"
+
+# Deploy
+fly deploy
+
+# Or use the automated script
+./scripts/deploy.sh
+```
+
+API will be at `https://ailivili.fly.dev/api/v1/health`

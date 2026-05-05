@@ -1,0 +1,38 @@
+# Fly.io deployment config for AiliVili
+# Deploy: fly launch (first time) then fly deploy
+
+app = "ailivili"
+primary_region = "nrt"  # Tokyo — closest to you
+
+[build]
+  dockerfile = "backend/Dockerfile"
+
+[env]
+  PORT = "8080"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory = "1gb"
+
+[[services]]
+  protocol = "tcp"
+  internal_port = 8080
+  auto_stop_machines = false
+  auto_start_machines = true
+
+  [[services.ports]]
+    port = 80
+    handlers = ["http"]
+    force_https = true
+
+  [[services.ports]]
+    port = 443
+    handlers = ["tls", "http"]
+
+  [[services.http_checks]]
+    interval = "15s"
+    timeout = "5s"
+    grace_period = "30s"
+    method = "get"
+    path = "/api/v1/health"
