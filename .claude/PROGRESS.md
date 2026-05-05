@@ -1,8 +1,8 @@
 # AiliVili Build Progress
 
-## Status: Full Stack Complete + Verified — P0–P3 Done
+## Status: Full Stack Complete + Verified — All Phases Delivered
 
-**103 files | ~6,700 lines | 12 migrations | 40 endpoints | 7 app screens | 67 tests | WebSocket + E2E verified**
+**107 files | ~7,000 lines | 13 migrations | 40 endpoints | 7 app screens | 67 tests | DB-backed refresh tokens | WebSocket + E2E verified**
 
 ---
 
