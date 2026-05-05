@@ -31,6 +31,7 @@ export default function RootLayout() {
         <Stack.Screen name="search" options={{ title: "Search" }} />
         <Stack.Screen name="upload" options={{ title: "Upload Video" }} />
         <Stack.Screen name="playlists" options={{ title: "Playlists" }} />
+        <Stack.Screen name="settings" options={{ title: "Settings" }} />
         <Stack.Screen name="profile/[id]" options={{ title: "Profile" }} />
       </Stack>
     </>
