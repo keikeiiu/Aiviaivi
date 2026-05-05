@@ -2,11 +2,13 @@ import { create } from "zustand";
 
 interface VideoState {
   currentVideoId: string | null;
+  currentTitle: string;
+  currentCover: string;
   isPlaying: boolean;
   progress: number;
   duration: number;
 
-  setVideo: (id: string) => void;
+  setVideo: (id: string, title?: string, cover?: string) => void;
   setPlaying: (playing: boolean) => void;
   setProgress: (progress: number) => void;
   setDuration: (duration: number) => void;
@@ -15,13 +17,16 @@ interface VideoState {
 
 export const useVideoStore = create<VideoState>((set) => ({
   currentVideoId: null,
+  currentTitle: "",
+  currentCover: "",
   isPlaying: false,
   progress: 0,
   duration: 0,
 
-  setVideo: (id) => set({ currentVideoId: id, progress: 0, duration: 0, isPlaying: true }),
+  setVideo: (id, title = "", cover = "") =>
+    set({ currentVideoId: id, currentTitle: title, currentCover: cover, progress: 0, duration: 0, isPlaying: true }),
   setPlaying: (playing) => set({ isPlaying: playing }),
   setProgress: (progress) => set({ progress }),
   setDuration: (duration) => set({ duration }),
-  reset: () => set({ currentVideoId: null, isPlaying: false, progress: 0, duration: 0 }),
+  reset: () => set({ currentVideoId: null, currentTitle: "", currentCover: "", isPlaying: false, progress: 0, duration: 0 }),
 }));

@@ -1,10 +1,15 @@
 import { Stack } from "expo-router";
 import { StatusBar } from "expo-status-bar";
 import { useAuth } from "../hooks/useAuth";
+import { useVideoStore } from "../store/videoStore";
+import MiniPlayer from "../components/MiniPlayer";
 import { View, Text, ActivityIndicator } from "react-native";
 
 export default function RootLayout() {
   const { isLoading } = useAuth();
+  const currentVideoId = useVideoStore((s) => s.currentVideoId);
+  const currentTitle = useVideoStore((s) => s.currentTitle);
+  const currentCover = useVideoStore((s) => s.currentCover);
 
   if (isLoading) {
     return (
@@ -15,7 +20,7 @@ export default function RootLayout() {
   }
 
   return (
-    <>
+    <View style={{ flex: 1, backgroundColor: "#0f0f0f" }}>
       <StatusBar style="light" />
       <Stack
         screenOptions={{
@@ -36,6 +41,10 @@ export default function RootLayout() {
         <Stack.Screen name="login" options={{ title: "Sign In", headerShown: false }} />
         <Stack.Screen name="register" options={{ title: "Sign Up", headerShown: false }} />
       </Stack>
-    </>
+
+      {currentVideoId ? (
+        <MiniPlayer videoId={currentVideoId} title={currentTitle} coverUrl={currentCover} />
+      ) : null}
+    </View>
   );
 }

@@ -3,6 +3,7 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Dimensions, Activ
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useVideo } from "../../hooks/useVideo";
 import { useDanmaku } from "../../hooks/useDanmaku";
+import { useEffect } from "react";
 import { useVideoStore } from "../../store/videoStore";
 import { usePlayerStore } from "../../store/playerStore";
 import { useAuthStore } from "../../store/authStore";
@@ -20,7 +21,15 @@ export default function VideoScreen() {
   const router = useRouter();
   const { video, loading, error } = useVideo(id || null);
   const progress = useVideoStore((s) => s.progress);
+  const setVideo = useVideoStore((s) => s.setVideo);
   const { items: danmakuItems, viewCount, useWebSocket: wsActive, sendDanmaku } = useDanmaku(id || null, progress);
+
+  // Update mini-player info when video loads
+  useEffect(() => {
+    if (video && id) {
+      setVideo(id, video.title, video.cover_url);
+    }
+  }, [video, id, setVideo]);
   const [liked, setLiked] = useState(false);
   const [favorited, setFavorited] = useState(false);
   const isAuth = useAuthStore((s) => s.isAuthenticated);
