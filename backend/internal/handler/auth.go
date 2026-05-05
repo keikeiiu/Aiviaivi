@@ -34,6 +34,7 @@ func (h *Handler) AuthRegister(w http.ResponseWriter, r *http.Request) {
 
 	req.Username = strings.TrimSpace(req.Username)
 	req.Email = strings.TrimSpace(strings.ToLower(req.Email))
+	req.Password = strings.TrimSpace(req.Password)
 
 	if req.Username == "" || req.Email == "" || req.Password == "" {
 		response.Error(w, http.StatusBadRequest, 40002, "missing fields")
@@ -81,6 +82,7 @@ func (h *Handler) AuthLogin(w http.ResponseWriter, r *http.Request) {
 	}
 
 	req.Email = strings.TrimSpace(strings.ToLower(req.Email))
+	req.Password = strings.TrimSpace(req.Password)
 	if req.Email == "" || req.Password == "" {
 		response.Error(w, http.StatusBadRequest, 40002, "missing fields")
 		return
