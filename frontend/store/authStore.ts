@@ -59,11 +59,12 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 
   restore: async () => {
     try {
-      const [[, token], [, userStr]] = await AsyncStorage.multiGet(["token", "user"]);
+      const kvPairs = await AsyncStorage.multiGet(["token", "user"]);
+      const token = kvPairs[0]?.[1];
+      const userStr = kvPairs[1]?.[1];
       if (token && userStr) {
         const user = JSON.parse(userStr);
         set({ user, token, isAuthenticated: true, isLoading: false });
-        // Refresh profile in background
         get().refreshProfile();
         return;
       }
