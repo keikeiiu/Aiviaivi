@@ -2,7 +2,7 @@
 
 ## Status: Full Stack Complete + Verified — All Phases Delivered
 
-**99 source files | ~5,800 lines | 12 migrations | 40 endpoints | 6 app screens | 47 unit tests | 36 live tests | WebSocket verified | E2E flow verified**
+**100 source files | ~6,400 lines | 12 migrations | 40 endpoints | 6 app screens | 47 unit tests | 20 integration tests | 67 total tests | WebSocket verified | E2E flow verified**
 
 ---
 
