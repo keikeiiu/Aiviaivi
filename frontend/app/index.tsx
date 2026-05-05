@@ -18,9 +18,13 @@ export default function HomeScreen() {
         <TouchableOpacity onPress={() => router.push("/search")} style={styles.searchBar}>
           <Text style={styles.searchText}>Search videos...</Text>
         </TouchableOpacity>
-        {isAuthenticated && (
+        {isAuthenticated ? (
           <TouchableOpacity onPress={() => router.push("/upload")} style={styles.uploadBtn}>
             <Text style={styles.uploadBtnText}>+</Text>
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity onPress={() => router.push("/login")} style={styles.signInBtn}>
+            <Text style={styles.signInText}>Sign In</Text>
           </TouchableOpacity>
         )}
       </View>
@@ -59,6 +63,8 @@ const styles = StyleSheet.create({
   searchText: { color: "#666", fontSize: 14 },
   uploadBtn: { width: 40, height: 40, borderRadius: 20, backgroundColor: "#00a1d6", justifyContent: "center", alignItems: "center" },
   uploadBtnText: { color: "#fff", fontSize: 24, fontWeight: "300" },
+  signInBtn: { paddingHorizontal: 16, paddingVertical: 10, borderRadius: 20, backgroundColor: "#00a1d6" },
+  signInText: { color: "#fff", fontSize: 14, fontWeight: "600" },
   list: { paddingHorizontal: 12, paddingTop: 8 },
   empty: { color: "#666", textAlign: "center", marginTop: 100, fontSize: 16 },
 });

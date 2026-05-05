@@ -33,6 +33,8 @@ export default function RootLayout() {
         <Stack.Screen name="playlists" options={{ title: "Playlists" }} />
         <Stack.Screen name="settings" options={{ title: "Settings" }} />
         <Stack.Screen name="profile/[id]" options={{ title: "Profile" }} />
+        <Stack.Screen name="login" options={{ title: "Sign In", headerShown: false }} />
+        <Stack.Screen name="register" options={{ title: "Sign Up", headerShown: false }} />
       </Stack>
     </>
   );
