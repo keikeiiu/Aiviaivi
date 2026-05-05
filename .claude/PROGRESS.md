@@ -2,7 +2,7 @@
 
 ## Status: **Complete** — P0–P3 All Phases Delivered & Verified
 
-**117 files | ~7,500 lines | 13 migrations | 40 endpoints | 11 app screens | 67 tests | 14 bugs fixed | 2 of 3 decisions resolved**
+**120 files | ~7,500 lines | 13 migrations | 40 endpoints | 11 app screens | 67 tests | 14 bugs fixed | Knowledge graph built | 2 of 3 decisions resolved**
 
 ---
 
