@@ -2,7 +2,7 @@
 
 ## Status: **Complete** — P0–P3 All Phases Delivered & Verified
 
-**112 files | ~7,300 lines | 13 migrations | 40 endpoints | 9 app screens | 67 tests | 14 bugs fixed | 2 of 3 decisions resolved**
+**117 files | ~7,500 lines | 13 migrations | 40 endpoints | 11 app screens | 67 tests | 14 bugs fixed | 2 of 3 decisions resolved**
 
 ---
 
@@ -40,7 +40,7 @@
 | Frontend: Favorite button | ✅ |
 | Redis container | ✅ |
 
-### P2 Real-time — 10/12 ✅ (2 deferred)
+### P2 Real-time — 11/12 ✅ (1 deferred)
 | Item | Status |
 |------|--------|
 | WebSocket danmaku server | ✅ |
@@ -50,7 +50,7 @@
 | Frontend: WS danmaku (with REST fallback) | ✅ |
 | Frontend: Live view counter | ✅ |
 | Frontend: In-feed video auto-preview | ⏭ Deferred |
-| Frontend: Mini-player overlay | ⏭ Deferred |
+| Frontend: Mini-player overlay | ✅ |
 | Rate limiting via Redis | ✅ |
 
 ### P3 Polish — 12/14 ✅ (2 deferred)
@@ -69,7 +69,7 @@
 | Video download support | ⏭ Deferred |
 | App store config | ⏭ Deferred |
 
-**48/52 plan items delivered. 4 deferred (2 frontend polish + 2 platform-native).**
+**50/52 plan items delivered. 2 deferred (in-feed preview + video download, both need native device APIs).**
 
 ---
 
