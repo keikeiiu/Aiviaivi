@@ -13,6 +13,8 @@ import DanmakuInput from "../../components/DanmakuInput";
 import CommentSection from "../../components/CommentSection";
 import { social as socialApi } from "../../services/api";
 import { formatCount } from "../../utils/format";
+import { HLS_BASE_URL } from "../../utils/constants";
+import { useDownload } from "../../hooks/useDownload";
 
 const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
@@ -33,6 +35,7 @@ export default function VideoScreen() {
   const [liked, setLiked] = useState(false);
   const [favorited, setFavorited] = useState(false);
   const isAuth = useAuthStore((s) => s.isAuthenticated);
+  const { downloading, progress: downloadProgress, download } = useDownload();
 
   const handleDanmakuSend = useCallback(
     (content: string) => sendDanmaku(content, progress),
@@ -126,6 +129,21 @@ export default function VideoScreen() {
                 {favorited ? "⭐" : "☆"}
               </Text>
               <Text style={styles.actionLabel}>Favorite</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.actionBtn}
+              onPress={() => {
+                const url = video.qualities?.[0]?.manifest_url;
+                if (url) {
+                  const fullUrl = url.startsWith("http") ? url : `${HLS_BASE_URL}${url}`;
+                  download(fullUrl, `${video.title || "video"}.m3u8`);
+                }
+              }}
+            >
+              <Text style={styles.actionIcon}>{downloading ? "⏳" : "⬇"}</Text>
+              <Text style={styles.actionLabel}>
+                {downloading ? `${Math.round(downloadProgress * 100)}%` : "Download"}
+              </Text>
             </TouchableOpacity>
           </View>
 
