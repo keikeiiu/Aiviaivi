@@ -1,16 +1,28 @@
-import { useEffect } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { View, FlatList, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import { useFeed } from "../hooks/useFeed";
 import { useAuth } from "../hooks/useAuth";
-import VideoCard from "../components/VideoCard";
+import VideoCardPreview from "../components/VideoCardPreview";
+
+const viewabilityConfig = {
+  itemVisiblePercentThreshold: 50,
+  minimumViewTime: 300,
+};
 
 export default function HomeScreen() {
   const router = useRouter();
   const { isAuthenticated } = useAuth();
   const { items, loading, hasMore, refresh, loadMore } = useFeed("latest");
+  const [focusedId, setFocusedId] = useState<string | null>(null);
 
   useEffect(() => { refresh(); }, []);
+
+  const onViewableItemsChanged = useCallback(({ viewableItems }: any) => {
+    if (viewableItems.length > 0) {
+      setFocusedId(viewableItems[0].item.id);
+    }
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -33,20 +45,22 @@ export default function HomeScreen() {
         data={items}
         keyExtractor={(item) => item.id}
         renderItem={({ item }) => (
-          <VideoCard
+          <VideoCardPreview
             id={item.id}
             title={item.title}
             cover_url={item.cover_url}
             duration={item.duration}
             view_count={item.view_count}
             user={item.user}
-            created_at={item.created_at}
+            isFocused={item.id === focusedId}
           />
         )}
         refreshing={loading}
         onRefresh={refresh}
         onEndReached={loadMore}
         onEndReachedThreshold={0.5}
+        viewabilityConfig={viewabilityConfig}
+        onViewableItemsChanged={onViewableItemsChanged}
         contentContainerStyle={styles.list}
         ListEmptyComponent={
           !loading ? <Text style={styles.empty}>No videos yet</Text> : null
