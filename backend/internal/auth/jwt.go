@@ -18,6 +18,18 @@ func NewToken(userID string, secret string, expires time.Duration) (string, erro
 	return t.SignedString([]byte(secret))
 }
 
+func NewRefreshToken(userID string, secret string, expires time.Duration) (string, error) {
+	now := time.Now()
+	claims := jwt.MapClaims{
+		"sub":  userID,
+		"iat":  now.Unix(),
+		"exp":  now.Add(expires).Unix(),
+		"type": "refresh",
+	}
+	t := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
+	return t.SignedString([]byte(secret))
+}
+
 func ParseToken(tokenStr string, secret string) (*jwt.Token, jwt.MapClaims, error) {
 	var claims jwt.MapClaims
 	t, err := jwt.ParseWithClaims(tokenStr, &claims, func(token *jwt.Token) (any, error) {

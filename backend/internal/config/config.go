@@ -8,11 +8,14 @@ import (
 )
 
 type Config struct {
-	Port          int
-	DatabaseURL   string
-	JWTSecret     string
-	JWTExpires    time.Duration
-	MigrationsDir string
+	Port           int
+	DatabaseURL    string
+	JWTSecret      string
+	JWTExpires     time.Duration
+	MigrationsDir  string
+	RedisURL       string
+	Storage        string // "local" or "minio"
+	StorageBaseURL string
 }
 
 func Load() (Config, error) {
@@ -27,6 +30,9 @@ func Load() (Config, error) {
 	cfg.DatabaseURL = os.Getenv("DATABASE_URL")
 	cfg.JWTSecret = os.Getenv("JWT_SECRET")
 	cfg.MigrationsDir = getenv("MIGRATIONS_DIR", "migrations")
+	cfg.RedisURL = os.Getenv("REDIS_URL")
+	cfg.Storage = getenv("STORAGE", "local")
+	cfg.StorageBaseURL = getenv("STORAGE_BASE_URL", "")
 
 	expiresMin, err := strconv.Atoi(getenv("JWT_EXPIRES_MINUTES", "60"))
 	if err != nil {

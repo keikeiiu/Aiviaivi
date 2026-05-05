@@ -1,0 +1,27 @@
+{
+  "expo": {
+    "name": "AiliVili",
+    "slug": "ailivili",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "scheme": "ailivili",
+    "userInterfaceStyle": "dark",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.ailivili.app"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "backgroundColor": "#0f0f0f"
+      },
+      "package": "com.ailivili.app"
+    },
+    "plugins": [
+      "expo-router"
+    ],
+    "experiments": {
+      "typedRoutes": true
+    }
+  }
+}

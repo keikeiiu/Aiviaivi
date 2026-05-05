@@ -13,6 +13,9 @@ import (
 	"ailivili/internal/config"
 	"ailivili/internal/db"
 	"ailivili/internal/httpapi"
+	"ailivili/internal/redis"
+	"ailivili/internal/storage"
+	"ailivili/internal/ws"
 )
 
 func main() {
@@ -33,9 +36,53 @@ func main() {
 		log.Fatalf("migrate: %v", err)
 	}
 
+	var redisClient *redis.Client
+	if cfg.RedisURL != "" {
+		redisClient, err = redis.New(ctx, cfg.RedisURL)
+		if err != nil {
+			log.Printf("redis: %v — continuing without cache", err)
+			redisClient = nil
+		} else {
+			defer redisClient.Close()
+			log.Printf("redis: connected to %s", cfg.RedisURL)
+		}
+	}
+
+	hub := ws.NewHub()
+
+	// Optional Redis pub/sub for cross-instance danmaku sync
+	if redisClient != nil {
+		rps := ws.NewRedisPubSub(redisClient.RDB(), hub)
+		hub.SetRedisPubSub(rps)
+		rps.Start(ctx)
+	}
+
+	var store storage.FileStore
+	switch cfg.Storage {
+	case "minio":
+		store = storage.NewMinioStore(
+			os.Getenv("MINIO_ENDPOINT"),
+			os.Getenv("MINIO_BUCKET"),
+			cfg.StorageBaseURL,
+		)
+	default:
+		store = storage.NewLocalStore("uploads", cfg.StorageBaseURL)
+	}
+
+	deps := httpapi.Deps{
+		DB:         sqlDB,
+		JWTSecret:  cfg.JWTSecret,
+		JWTExpires: cfg.JWTExpires,
+		Hub:        hub,
+		Store:      store,
+	}
+	if redisClient != nil {
+		deps.Redis = redisClient.RDB()
+	}
+
 	srv := &http.Server{
 		Addr:              cfg.Addr(),
-		Handler:           httpapi.New(httpapi.Deps{DB: sqlDB, JWTSecret: cfg.JWTSecret, JWTExpires: cfg.JWTExpires}),
+		Handler:           httpapi.New(deps),
 		ReadHeaderTimeout: 10 * time.Second,
 		ReadTimeout:       30 * time.Second,
 		WriteTimeout:      30 * time.Second,

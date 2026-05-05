@@ -1,0 +1,23 @@
+# Dependencies
+frontend/node_modules/
+
+# Uploads (test artifacts)
+backend/uploads/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Build output
+*.exe
+*.dll
+*.so
+*.dylib
+
+# IDE
+.idea/
+.vscode/
+
+# Environment
+.env
+.env.local

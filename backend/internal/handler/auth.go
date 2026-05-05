@@ -63,13 +63,20 @@ func (h *Handler) AuthRegister(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	refreshToken, err := auth.NewRefreshToken(u.ID, h.jwtSecret, h.jwtExpires*24*7)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, 50003, "create token failed")
+		return
+	}
+
 	response.OK(w, map[string]any{
 		"user": map[string]any{
 			"id":       u.ID,
 			"username": u.Username,
 			"email":    u.Email,
 		},
-		"token": token,
+		"token":         token,
+		"refresh_token": refreshToken,
 	})
 }
 
@@ -109,12 +116,75 @@ func (h *Handler) AuthLogin(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	refreshToken, err := auth.NewRefreshToken(u.ID, h.jwtSecret, h.jwtExpires*24*7)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, 50003, "create token failed")
+		return
+	}
+
 	response.OK(w, map[string]any{
 		"user": map[string]any{
 			"id":       u.ID,
 			"username": u.Username,
 			"email":    u.Email,
 		},
-		"token": token,
+		"token":         token,
+		"refresh_token": refreshToken,
 	})
+}
+
+type refreshRequest struct {
+	RefreshToken string `json:"refresh_token"`
+}
+
+func (h *Handler) AuthRefresh(w http.ResponseWriter, r *http.Request) {
+	r.Body = http.MaxBytesReader(w, r.Body, maxBodySize)
+	var req refreshRequest
+	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
+		response.Error(w, http.StatusBadRequest, 40001, "invalid json")
+		return
+	}
+
+	req.RefreshToken = strings.TrimSpace(req.RefreshToken)
+	if req.RefreshToken == "" {
+		response.Error(w, http.StatusBadRequest, 40002, "missing refresh_token")
+		return
+	}
+
+	tok, claims, err := auth.ParseToken(req.RefreshToken, h.jwtSecret)
+	if err != nil || tok == nil || !tok.Valid {
+		response.Error(w, http.StatusUnauthorized, 40104, "invalid refresh token")
+		return
+	}
+
+	typ, _ := claims["type"].(string)
+	if typ != "refresh" {
+		response.Error(w, http.StatusUnauthorized, 40104, "invalid refresh token")
+		return
+	}
+
+	sub, ok := claims["sub"].(string)
+	if !ok || strings.TrimSpace(sub) == "" {
+		response.Error(w, http.StatusUnauthorized, 40104, "invalid refresh token")
+		return
+	}
+
+	u, err := model.GetUserByID(r.Context(), h.db, sub)
+	if err != nil {
+		if err == model.ErrUserNotFound {
+			response.Error(w, http.StatusUnauthorized, 40104, "user not found")
+		} else {
+			response.Error(w, http.StatusInternalServerError, 50005, "get user failed")
+		}
+		return
+	}
+	_ = u
+
+	newToken, err := auth.NewToken(sub, h.jwtSecret, h.jwtExpires)
+	if err != nil {
+		response.Error(w, http.StatusInternalServerError, 50003, "create token failed")
+		return
+	}
+
+	response.OK(w, map[string]any{"token": newToken})
 }

@@ -8,7 +8,7 @@ COPY . .
 RUN go build -o /out/server ./cmd/server
 
 FROM alpine:3.20
-RUN apk add --no-cache ca-certificates
+RUN apk add --no-cache ca-certificates ffmpeg
 WORKDIR /app
 COPY --from=build /out/server /app/server
 COPY migrations /app/migrations

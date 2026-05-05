@@ -25,3 +25,18 @@ func OK(w http.ResponseWriter, data any) {
 func Error(w http.ResponseWriter, status int, code int, msg string) {
 	WriteJSON(w, status, Envelope[any]{Code: code, Message: msg})
 }
+
+type Pagination struct {
+	Page  int `json:"page"`
+	Size  int `json:"size"`
+	Total int `json:"total"`
+}
+
+func WithPagination(w http.ResponseWriter, data any, page int, size int, total int) {
+	WriteJSON(w, http.StatusOK, Envelope[any]{
+		Code:       0,
+		Message:    "ok",
+		Data:       data,
+		Pagination: Pagination{Page: page, Size: size, Total: total},
+	})
+}
