@@ -3,6 +3,7 @@ package httpapi
 import (
 	"database/sql"
 	"net/http"
+	"strings"
 	"time"
 
 	"ailivili/internal/handler"
@@ -134,6 +135,13 @@ func New(deps Deps) http.Handler {
 	// Prometheus metrics endpoint
 	r.Get("/metrics", func(w http.ResponseWriter, r *http.Request) {
 		promhttp.Handler().ServeHTTP(w, r)
+	})
+
+	// Serve HLS and uploaded files
+	fs := http.FileServer(http.Dir("uploads"))
+	r.Get("/uploads/*", func(w http.ResponseWriter, r *http.Request) {
+		r.URL.Path = strings.TrimPrefix(r.URL.Path, "/uploads")
+		fs.ServeHTTP(w, r)
 	})
 
 	return r

@@ -7,7 +7,7 @@ export const WS_BASE_URL = __DEV__
   : "wss://api.ailivili.com/api/v1";
 
 export const HLS_BASE_URL = __DEV__
-  ? "http://localhost:8081"
+  ? "http://localhost:8080"
   : "https://cdn.ailivili.com";
 
 export const PAGE_SIZE = 20;
