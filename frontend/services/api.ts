@@ -66,7 +66,10 @@ export const videos = {
   detail: (id: string) => api.get(`/videos/${id}`),
   related: (id: string) => api.get(`/videos/${id}/related`),
   upload: (formData: FormData) =>
-    api.post("/videos/upload", formData),
+    api.post("/videos/upload", formData, {
+      headers: { "Content-Type": "multipart/form-data" },
+      transformRequest: [(data: any) => data],
+    }),
   update: (id: string, data: { title?: string; description?: string; tags?: string[] }) =>
     api.put(`/videos/${id}`, data),
   delete: (id: string) => api.delete(`/videos/${id}`),
