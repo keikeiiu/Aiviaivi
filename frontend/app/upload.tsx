@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert } from "react-native";
+import { View, Text, TextInput, TouchableOpacity, StyleSheet, Alert, Platform } from "react-native";
 import { useRouter } from "expo-router";
 import * as DocumentPicker from "expo-document-picker";
 import { videos as videosApi } from "../services/api";
@@ -9,7 +9,7 @@ export default function UploadScreen() {
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
   const [tags, setTags] = useState("");
-  const [file, setFile] = useState<{ uri: string; name: string } | null>(null);
+  const [file, setFile] = useState<{ uri: string; name: string; mimeType?: string; file?: File } | null>(null);
   const [uploading, setUploading] = useState(false);
 
   const pickFile = async () => {
@@ -19,9 +19,17 @@ export default function UploadScreen() {
         copyToCacheDirectory: true,
       });
       if (!result.canceled && result.assets?.[0]) {
-        setFile({ uri: result.assets[0].uri, name: result.assets[0].name });
+        const asset = result.assets[0];
+        setFile({
+          uri: asset.uri,
+          name: asset.name,
+          mimeType: asset.mimeType || "video/mp4",
+          file: (asset as any).file, // File object available on web
+        });
       }
-    } catch {}
+    } catch (e: any) {
+      Alert.alert("Error", e?.message || "Failed to pick file");
+    }
   };
 
   const handleUpload = async () => {
@@ -35,18 +43,27 @@ export default function UploadScreen() {
       formData.append("title", title.trim());
       formData.append("description", description.trim());
       formData.append("tags", tags.trim());
-      formData.append("file", {
-        uri: file.uri,
-        name: file.name,
-        type: "video/mp4",
-      } as any);
 
-      await videosApi.upload(formData);
+      // On web, use the actual File object; on native, use { uri, name, type }
+      if (Platform.OS === "web" && file.file) {
+        formData.append("file", file.file, file.name);
+      } else {
+        formData.append("file", {
+          uri: file.uri,
+          name: file.name,
+          type: file.mimeType || "video/mp4",
+        } as any);
+      }
+
+      const response = await videosApi.upload(formData);
+      console.log("Upload response:", response.data);
       Alert.alert("Success", "Video uploaded! Processing will begin shortly.", [
         { text: "OK", onPress: () => router.back() },
       ]);
-    } catch {
-      Alert.alert("Error", "Upload failed");
+    } catch (e: any) {
+      console.error("Upload error:", e);
+      const msg = e?.response?.data?.message || e?.message || "Upload failed";
+      Alert.alert("Error", msg);
     } finally {
       setUploading(false);
     }
